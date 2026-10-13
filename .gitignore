@@ -1,0 +1,22 @@
+# 비밀정보 (절대 공개되면 안 됨)
+.env
+.env.*
+*.pem
+*.key
+
+# Windows가 자동으로 만드는 파일
+Thumbs.db
+desktop.ini
+
+# Mac이 자동으로 만드는 파일
+.DS_Store
+
+# 편집기·도구 개인 설정
+.vscode/
+.claude/settings.local.json
+
+# Python 임시 파일
+__pycache__/
+
+# 기록용 로그 파일
+*.log
