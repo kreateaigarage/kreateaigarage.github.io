@@ -5,46 +5,109 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KREATE AI GARAGE · 임태훈</title>
   <meta name="description" content="임태훈(Taehoun Lim)의 개인 홈페이지 · AI Works, KAIST AI 수강과목, DX">
+  <meta name="theme-color" content="#0B0A14">
+  <!-- 무료 글꼴 Pretendard -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
   <!-- 1. 상단 바: 로고, 검색창(꾸밈용), KO/EN 버튼, 장바구니 아이콘 -->
   <header id="top-bar">
-    <p>[상단 바] KREATE AI GARAGE · 검색창 · KO/EN · 장바구니(0)</p>
+    <div class="wrap top-bar-inner">
+      <a class="logo" href="#">KREATE AI GARAGE SHOP</a>
+
+      <div class="search" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="18" height="18"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M20 20l-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span>AI · DX · KAIST 검색</span>
+      </div>
+
+      <div class="top-actions">
+        <div class="lang-toggle">
+          <button type="button" class="is-active">KO</button>
+          <button type="button">EN</button>
+        </div>
+        <button type="button" class="cart-button" aria-label="장바구니">
+          <svg viewBox="0 0 24 24" width="22" height="22"><path d="M3 4h2l2.4 11.2a1 1 0 0 0 1 .8h9.2a1 1 0 0 0 1-.8L20 8H6.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9.5" cy="20" r="1.4" fill="currentColor"/><circle cx="17" cy="20" r="1.4" fill="currentColor"/></svg>
+          <span class="cart-count">0</span>
+        </button>
+      </div>
+    </div>
   </header>
 
-  <main>
+  <main class="wrap">
     <!-- 2. 오늘의 특가 배너 -->
     <section id="banner">
-      <h1>[배너] 오늘의 특가 · TODAY'S PICK</h1>
-      <p>임태훈 TAEHOUN LIM</p>
+      <div class="banner-id">
+        <p class="banner-label">TODAY'S PICK · 오늘의 특가</p>
+        <h1 class="banner-name">임태훈 <span class="banner-name-en">TAEHOUN LIM</span></h1>
+      </div>
+      <div class="banner-pitch">
+        <p class="banner-tagline">Data로 만들고, AI로 해결합니다</p>
+        <a class="button-primary" href="#product-list">AI Works 보기</a>
+      </div>
     </section>
 
     <!-- 3. 카테고리 탭 -->
-    <nav id="category-tabs">
-      <p>[카테고리 탭] 전체 · AI Works · KAIST · DX · 프로필</p>
+    <nav id="category-tabs" aria-label="카테고리">
+      <button type="button" class="tab is-active">전체</button>
+      <button type="button" class="tab">AI Works</button>
+      <button type="button" class="tab">KAIST</button>
+      <button type="button" class="tab">DX</button>
+      <button type="button" class="tab">현재 업무</button>
+      <button type="button" class="tab">학력</button>
+      <button type="button" class="tab">취미</button>
+      <button type="button" class="tab">커리어 히어로</button>
     </nav>
 
-    <!-- 4. 상품 목록 (3단계에서 js/data.js의 내용으로 채움) -->
+    <!-- 4. 상품 목록 (예시 카드 2개는 디자인 확인용. 3단계에서 js/data.js의 상품 7개로 교체) -->
     <section id="product-list">
-      <h2>[상품 목록]</h2>
+      <article class="product-card">
+        <div class="product-image art-1">
+          <span class="badge badge-best">BEST</span>
+        </div>
+        <div class="product-body">
+          <h3 class="product-title">예시 상품 1</h3>
+          <p class="product-desc">디자인 확인용 예시 카드입니다. 3단계에서 실제 상품으로 바뀝니다.</p>
+          <p class="product-price"><strong>₩0</strong> 무료 열람</p>
+          <button type="button" class="button-cart">장바구니 담기</button>
+        </div>
+      </article>
+
+      <article class="product-card">
+        <div class="product-image art-2">
+          <span class="badge badge-kaist">KAIST</span>
+        </div>
+        <div class="product-body">
+          <h3 class="product-title">예시 상품 2</h3>
+          <p class="product-desc">디자인 확인용 예시 카드입니다.</p>
+          <p class="product-price"><strong>₩0</strong> 무료 열람</p>
+          <button type="button" class="button-cart">장바구니 담기</button>
+        </div>
+      </article>
     </section>
 
-    <!-- 5. 장바구니 (4단계에서 만듦) -->
-    <section id="cart">
-      <h2>[장바구니]</h2>
+    <!-- 5. 장바구니 (4단계에서 동작을 만듦) -->
+    <section id="cart" class="panel">
+      <h2>장바구니</h2>
+      <p class="panel-empty">장바구니가 비어 있습니다.</p>
     </section>
 
-    <!-- 6. 주문 완료 → 상세 페이지 (5단계에서 만듦) -->
-    <section id="order">
-      <h2>[주문 완료 · 상세 페이지]</h2>
+    <!-- 6. 주문 완료 → 상세 페이지 (5단계에서 동작을 만듦) -->
+    <section id="order" class="panel">
+      <h2>주문 내역</h2>
+      <p class="panel-empty">아직 주문한 상품이 없습니다.</p>
     </section>
   </main>
 
   <!-- 7. 하단 판매자 정보 -->
   <footer id="seller-info">
-    <p>[판매자 정보] 판매자 임태훈 · 소재지 서울 · GitHub</p>
+    <div class="wrap">
+      <p class="seller-title">판매자 정보</p>
+      <p>판매자 임태훈 (Taehoun Lim) · 소재지 서울 · 문의 <a href="https://github.com/kreateaigarage">GitHub</a></p>
+      <p class="seller-note">이 사이트의 모든 상품은 무료이며 실제로 판매되지 않습니다.</p>
+      <p class="seller-note">© 2026 KREATE AI GARAGE</p>
+    </div>
   </footer>
 
   <script src="js/data.js"></script>
