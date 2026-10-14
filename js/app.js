@@ -136,6 +136,14 @@ function addAll() {
   showToast(t("toastAddedAll", { n: missing.length }));
 }
 
+// 담은 상품을 모두 빼기 ([모두 담김 ✓]을 다시 눌렀을 때)
+function clearAll() {
+  cart = [];
+  saveCart();
+  refresh();
+  showToast(t("toastClearedAll"), { withCartButton: false });
+}
+
 // 장바구니가 바뀌면 화면 전체를 다시 그리기
 function refresh() {
   renderProducts();
@@ -186,9 +194,10 @@ function renderCart() {
   cartSummaryCountEl.textContent = t("summaryCount", { n: count });
   cartSummaryEl.hidden = count === 0;
 
-  // 모두 담겨 있으면 [전체 담기]를 [모두 담김 ✓]으로
+  // 모두 담겨 있으면 [전체 담기]를 [모두 담김 ✓]으로 (다시 누르면 모두 빼기)
   const allAdded = count === PRODUCTS.length;
-  addAllButton.disabled = allAdded;
+  addAllButton.classList.toggle("is-added", allAdded);
+  addAllButton.setAttribute("aria-pressed", allAdded);
   addAllButton.textContent = allAdded ? t("allAdded") : t("addAll");
 
   if (count === 0) {
@@ -312,8 +321,9 @@ function closeCart() {
 
 // ---------- 알림 ----------
 
-function showToast(message) {
+function showToast(message, { withCartButton = true } = {}) {
   toastTextEl.textContent = message;
+  toastOpenCartButton.hidden = !withCartButton;
   toastEl.classList.add("is-visible");
   clearTimeout(toastTimer);
   toastTimer = setTimeout(hideToast, 2500);
@@ -368,10 +378,10 @@ toastOpenCartButton.addEventListener("click", openCart);
 cartBuyButton.addEventListener("click", buy);
 continueShoppingButton.addEventListener("click", goShop);
 
+// [전체 담기] ↔ [모두 담김 ✓]
 addAllButton.addEventListener("click", () => {
-  addAll();
-  // 모두 담겨 버튼이 눌리지 않게 되면, 키보드 위치를 옆의 [장바구니 보기]로
-  if (addAllButton.disabled) cartOpenMainButton.focus();
+  if (cart.length === PRODUCTS.length) clearAll();
+  else addAll();
 });
 
 document.addEventListener("keydown", (event) => {

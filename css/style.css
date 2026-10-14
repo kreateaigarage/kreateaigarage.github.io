@@ -10,7 +10,6 @@
   --violet: #9B7BFF;
   --pink: #FF5FAE;
   --orange: #FFA552;
-  --sky: #5CC8FF;
   --grad: linear-gradient(120deg, var(--violet), var(--pink) 55%, var(--orange));
   --radius: 20px;
   --font: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
@@ -46,7 +45,7 @@ body::before {
     radial-gradient(40vw 40vw at 95% 25%, rgba(255, 79, 163, 0.22), transparent 70%),
     radial-gradient(50vw 40vw at 55% 105%, rgba(255, 154, 60, 0.14), transparent 70%),
     linear-gradient(180deg, rgba(11, 10, 20, 0.55) 0%, rgba(11, 10, 20, 0.78) 45%, rgba(11, 10, 20, 0.90) 100%),
-    url("../images/banner-garage.png") center 20% / cover no-repeat;
+    url("../images/background-garage.jpg") center 20% / cover no-repeat;
 }
 
 a { color: inherit; }
@@ -575,13 +574,14 @@ body.is-cart-open { overflow: hidden; }
 
 .button-secondary:hover { border-color: rgba(255, 255, 255, 0.3); }
 
-/* [모두 담김 ✓]처럼 눌리지 않는 상태 */
-.button-secondary:disabled {
-  opacity: 0.6;
-  cursor: default;
+/* [모두 담김 ✓] 상태: 그라데이션으로 채움 (다시 누르면 모두 빼기) */
+.button-secondary.is-added {
+  background: var(--grad);
+  border-color: transparent;
+  color: var(--bg);
 }
 
-.button-secondary:disabled:hover { border-color: var(--glass-border); }
+.button-secondary.is-added:hover { opacity: 0.85; }
 
 /* 합계와 구매하기 */
 .cart-summary {
