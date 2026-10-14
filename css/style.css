@@ -475,7 +475,7 @@ body.is-cart-open { overflow: hidden; }
   font-size: 1.15rem;
 }
 
-.cart-head h2 span {
+#cart-head-count {
   font-weight: 500;
   color: var(--text-sub);
 }

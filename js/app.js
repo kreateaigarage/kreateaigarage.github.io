@@ -1,13 +1,10 @@
-// 동작 파일: 카테고리 탭, 상품 목록, 장바구니, 구매하기(주문 완료·상세 화면)
-// (언어 전환은 6단계에서 추가)
+// 동작 파일: 카테고리 탭, 상품 목록, 장바구니, 구매하기(주문 완료·상세 화면), 언어 전환(KO/EN)
 
-const LANG = "ko"; // 6단계에서 KO/EN 버튼과 연결
-
-// '전체' 탭 + 상품마다 탭 하나 (탭 이름 = 상품 제목)
-const ALL_TAB = { id: "all", title: { ko: "전체" } };
-
-// 장바구니를 브라우저에 기억할 때 쓰는 이름
+// 장바구니와 언어를 브라우저에 기억할 때 쓰는 이름
 const CART_KEY = "kreateaigarage-cart";
+const LANG_KEY = "kreateaigarage-lang";
+
+let LANG = loadLang(); // 지금 화면 언어: "ko" 또는 "en"
 
 const shopEl = document.getElementById("shop");
 const tabsEl = document.getElementById("category-tabs");
@@ -34,6 +31,7 @@ const continueShoppingButton = document.getElementById("continue-shopping");
 const toastEl = document.getElementById("toast");
 const toastTextEl = document.getElementById("toast-text");
 const toastOpenCartButton = document.getElementById("toast-open-cart");
+const langToggleEl = document.getElementById("lang-toggle");
 
 let currentTab = "all";
 let cart = loadCart(); // 담은 상품 번호 목록 (담은 순서대로)
@@ -66,13 +64,63 @@ function findProduct(id) {
   return PRODUCTS.find((product) => product.id === id);
 }
 
+// ---------- 언어 ----------
+
+// 기억한 언어가 있으면 그것, 없으면 방문자 브라우저 언어 (한국어면 ko, 그 외에는 en)
+function loadLang() {
+  try {
+    const saved = localStorage.getItem(LANG_KEY);
+    if (saved === "ko" || saved === "en") return saved;
+  } catch {
+    // 저장이 막힌 브라우저에서는 브라우저 언어로
+  }
+  return (navigator.language || "").toLowerCase().startsWith("ko") ? "ko" : "en";
+}
+
+// 화면 글자 가져오기: t("orderMeta", { n: 3 }) → "상품 3개 · …"
+function t(key, vars = {}) {
+  return UI_TEXT[LANG][key]
+    .replace("{n}", vars.n)
+    .replace("{no}", vars.no)
+    .replace("{s}", vars.n === 1 ? "" : "s");
+}
+
+// index.html에서 data-i18n 표시가 있는 글자들을 지금 언어로 바꾸기
+function applyStaticText() {
+  document.documentElement.lang = LANG; // 화면 낭독 프로그램이 알맞은 발음으로 읽도록
+  document.title = t("pageTitle");
+  document.querySelectorAll("[data-i18n]").forEach((el) => {
+    el.textContent = t(el.dataset.i18n);
+  });
+  document.querySelectorAll("[data-i18n-aria]").forEach((el) => {
+    el.setAttribute("aria-label", t(el.dataset.i18nAria));
+  });
+  langToggleEl.querySelectorAll("[data-lang]").forEach((button) => {
+    const active = button.dataset.lang === LANG;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-pressed", active);
+  });
+}
+
+function setLang(lang) {
+  LANG = lang;
+  try {
+    localStorage.setItem(LANG_KEY, lang);
+  } catch {
+    // 저장이 막힌 브라우저에서는 이번 방문 동안만 적용
+  }
+  applyStaticText();
+  renderTabs();
+  refresh();
+}
+
 // 담기 ↔ 빼기
 function toggleCart(id) {
   if (cart.includes(id)) {
     cart = cart.filter((cartId) => cartId !== id);
   } else {
     cart.push(id);
-    showToast("장바구니에 담았습니다");
+    showToast(t("toastAdded"));
   }
   saveCart();
   refresh();
@@ -85,7 +133,7 @@ function addAll() {
   cart.push(...missing.map((product) => product.id));
   saveCart();
   refresh();
-  showToast(`${missing.length}개 상품을 담았습니다`);
+  showToast(t("toastAddedAll", { n: missing.length }));
 }
 
 // 장바구니가 바뀌면 화면 전체를 다시 그리기
@@ -99,11 +147,12 @@ function refresh() {
 
 // 탭 그리기
 function renderTabs() {
-  const tabs = [ALL_TAB, ...PRODUCTS];
+  // '전체' 탭 + 상품마다 탭 하나 (탭 이름 = 상품 제목)
+  const tabs = [{ id: "all", label: t("tabAll") }, ...PRODUCTS.map((product) => ({ id: product.id, label: product.title[LANG] }))];
   tabsEl.innerHTML = tabs.map((tab) => {
     const active = tab.id === currentTab;
     return `<button type="button" class="tab${active ? " is-active" : ""}"
-              data-tab="${tab.id}" aria-pressed="${active}">${tab.title[LANG]}</button>`;
+              data-tab="${tab.id}" aria-pressed="${active}">${tab.label}</button>`;
   }).join("");
 }
 
@@ -119,9 +168,9 @@ function renderProducts() {
       <article class="product-card" style="--c1: ${product.colors[0]}; --c2: ${product.colors[1]};">
         <div class="product-body">
           <h3 class="product-title">${product.title[LANG]}</h3>
-          <p class="product-price"><strong>₩0</strong> 무료 열람</p>
+          <p class="product-price"><strong>₩0</strong> ${t("price")}</p>
           <button type="button" class="button-cart${added ? " is-added" : ""}"
-                  data-id="${product.id}" aria-pressed="${added}">${added ? "담김 ✓" : "장바구니 담기"}</button>
+                  data-id="${product.id}" aria-pressed="${added}">${added ? t("added") : t("addToCart")}</button>
         </div>
       </article>
     `;
@@ -134,19 +183,19 @@ function renderCart() {
   cartCountEl.textContent = count;
   cartCountMainEl.textContent = count;
   cartHeadCountEl.textContent = `(${count})`;
-  cartSummaryCountEl.textContent = `${count}개`;
+  cartSummaryCountEl.textContent = t("summaryCount", { n: count });
   cartSummaryEl.hidden = count === 0;
 
   // 모두 담겨 있으면 [전체 담기]를 [모두 담김 ✓]으로
   const allAdded = count === PRODUCTS.length;
   addAllButton.disabled = allAdded;
-  addAllButton.textContent = allAdded ? "모두 담김 ✓" : "전체 담기";
+  addAllButton.textContent = allAdded ? t("allAdded") : t("addAll");
 
   if (count === 0) {
     cartItemsEl.innerHTML = `
       <div class="cart-empty">
-        <p>장바구니가 비어 있습니다.</p>
-        <button type="button" class="button-secondary" data-action="browse">상품 보러 가기</button>
+        <p>${t("cartEmpty")}</p>
+        <button type="button" class="button-secondary" data-action="browse">${t("browse")}</button>
       </div>
     `;
     return;
@@ -160,7 +209,7 @@ function renderCart() {
           <p class="cart-item-title">${product.title[LANG]}</p>
           <p class="cart-item-price">₩0</p>
         </div>
-        <button type="button" class="cart-item-remove" data-remove="${product.id}">삭제</button>
+        <button type="button" class="cart-item-remove" data-remove="${product.id}">${t("remove")}</button>
       </div>
     `;
   }).join("");
@@ -176,8 +225,8 @@ function renderOrder() {
   ].join("");
   const count = cart.length;
 
-  orderNumberEl.textContent = `주문번호 KAG-${date}-${String(count).padStart(2, "0")}`;
-  orderMetaEl.textContent = `상품 ${count}개 · 결제금액 ₩0 · 즉시 열람`;
+  orderNumberEl.textContent = t("orderNumber", { no: `KAG-${date}-${String(count).padStart(2, "0")}` });
+  orderMetaEl.textContent = t("orderMeta", { n: count });
 
   orderItemsEl.innerHTML = cart.map((id) => {
     const product = findProduct(id);
@@ -332,7 +381,15 @@ document.addEventListener("keydown", (event) => {
 // 주소 끝(#order 등)이 바뀌면 화면 전환 (뒤로 가기 버튼 포함)
 window.addEventListener("hashchange", updateView);
 
+// KO / EN 버튼
+langToggleEl.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-lang]");
+  if (!button || button.dataset.lang === LANG) return;
+  setLang(button.dataset.lang);
+});
+
 // ---------- 처음 그리기 ----------
 
+applyStaticText();
 renderTabs();
 refresh();
