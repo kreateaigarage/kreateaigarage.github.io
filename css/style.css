@@ -264,12 +264,52 @@ button {
 #category-tabs {
   display: flex;
   gap: 8px;
-  margin: 48px 0 24px;
+  margin: 48px 0 16px;
   overflow-x: auto;
   scrollbar-width: none;
 }
 
 #category-tabs::-webkit-scrollbar { display: none; }
+
+/* 이 위치로 이동할 때 상단 바에 가려지지 않게 */
+#category-tabs,
+#product-list { scroll-margin-top: 88px; }
+
+/* 탭 아래 버튼 줄: [전체 담기] [장바구니 보기 (개수)] */
+.shop-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.button-cart-view {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 12px 10px 20px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--grad);
+  color: var(--bg);
+  font-weight: 800;
+  transition: box-shadow 0.2s;
+}
+
+.button-cart-view:hover { box-shadow: 0 12px 30px -10px rgba(255, 95, 174, 0.7); }
+
+.cart-view-count {
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.75rem;
+  line-height: 22px;
+  text-align: center;
+}
 
 .tab {
   flex-shrink: 0;
@@ -369,32 +409,252 @@ button {
   transition: background 0.2s, border-color 0.2s, color 0.2s;
 }
 
-/* 마우스를 올리면 그 카드의 두 색 그라데이션으로 채움 */
-.button-cart:hover {
+/* 마우스를 올리면, 또는 담긴 상태면 그 카드의 두 색 그라데이션으로 채움 */
+.button-cart:hover,
+.button-cart.is-added {
   background: linear-gradient(120deg, var(--c1), var(--c2));
   border-color: transparent;
   color: var(--bg);
 }
 
-/* ---------- 5·6. 장바구니, 주문 내역 (기본 상자) ---------- */
-.panel {
-  margin-top: 48px;
-  padding: 24px 28px;
-  border-radius: var(--radius);
-  background: var(--glass);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid var(--glass-border);
+.button-cart.is-added:hover { opacity: 0.85; }
+
+/* ---------- 5. 장바구니 창 ---------- */
+
+/* 창 뒤를 어둡게 덮는 막 */
+.cart-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: rgba(5, 4, 10, 0.6);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
 }
 
-.panel h2 {
-  margin: 0 0 8px;
+.cart-overlay.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* 오른쪽에서 밀려 나오는 창 */
+.cart-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 21;
+  display: flex;
+  flex-direction: column;
+  width: min(420px, 100%);
+  height: 100%;
+  height: 100dvh;
+  padding-top: env(safe-area-inset-top, 0px);
+  background: rgba(16, 14, 28, 0.94);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-left: 1px solid var(--glass-border);
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+}
+
+.cart-drawer.is-open { transform: none; }
+
+/* 창이 열려 있으면 뒤 페이지는 스크롤되지 않게 */
+body.is-cart-open { overflow: hidden; }
+
+.cart-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.cart-head h2 {
+  margin: 0;
   font-size: 1.15rem;
 }
 
-.panel-empty {
-  margin: 0;
+.cart-head h2 span {
+  font-weight: 500;
   color: var(--text-sub);
+}
+
+.cart-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--glass-border);
+  background: var(--glass);
+  font-size: 0.9rem;
+}
+
+.cart-items {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 24px;
+}
+
+/* 장바구니 속 상품 한 줄: 왼쪽 색 띠 = 그 상품의 색 */
+.cart-item {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 14px 14px 20px;
+  border-radius: 14px;
+  background:
+    linear-gradient(120deg, color-mix(in srgb, var(--c1) 22%, transparent), transparent 70%),
+    rgba(255, 255, 255, 0.03);
+  border: 1px solid color-mix(in srgb, var(--c1) 35%, transparent);
+}
+
+.cart-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 4px;
+  border-radius: 0 4px 4px 0;
+  background: linear-gradient(180deg, var(--c1), var(--c2));
+}
+
+.cart-item-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.cart-item-title {
+  margin: 0;
+  font-weight: 700;
+}
+
+.cart-item-price {
+  margin: 4px 0 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.cart-item-remove {
+  flex-shrink: 0;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--glass-border);
+  background: transparent;
+  font-size: 0.8rem;
+  color: var(--text-sub);
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.cart-item-remove:hover {
+  color: var(--text);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.cart-empty {
+  padding: 56px 0;
+  text-align: center;
+  color: var(--text-sub);
+}
+
+.cart-empty p { margin: 0 0 16px; }
+
+.button-secondary {
+  padding: 10px 22px;
+  border-radius: 999px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass);
+  font-weight: 700;
+  transition: border-color 0.2s;
+}
+
+.button-secondary:hover { border-color: rgba(255, 255, 255, 0.3); }
+
+/* [모두 담김 ✓]처럼 눌리지 않는 상태 */
+.button-secondary:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.button-secondary:disabled:hover { border-color: var(--glass-border); }
+
+/* 합계와 구매하기 */
+.cart-summary {
+  padding: 20px 24px calc(24px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--glass-border);
+}
+
+.cart-summary p {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 0 8px;
+  font-size: 0.9rem;
+  color: var(--text-sub);
+}
+
+.cart-summary strong {
+  font-size: 1.1rem;
+  color: var(--text);
+}
+
+.button-buy {
+  width: 100%;
+  margin-top: 12px;
+  padding: 14px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--grad);
+  color: var(--bg);
+  font-size: 1rem;
+  font-weight: 800;
+  transition: box-shadow 0.2s;
+}
+
+.button-buy:hover { box-shadow: 0 12px 30px -10px rgba(255, 95, 174, 0.7); }
+
+/* ---------- 담았을 때 잠깐 뜨는 알림 ---------- */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: calc(100% - 32px);
+  padding: 10px 10px 10px 20px;
+  border-radius: 999px;
+  background: rgba(20, 18, 34, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.6);
+  font-size: 0.9rem;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden; /* 안 보일 때는 Tab 키로도 들어가지 않게 */
+  transform: translate(-50%, 16px);
+  transition: opacity 0.25s, transform 0.25s, visibility 0.25s;
+}
+
+.toast.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+}
+
+.toast button {
+  padding: 7px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--grad);
+  color: var(--bg);
+  font-size: 0.82rem;
+  font-weight: 800;
 }
 
 /* ---------- 7. 판매자 정보 ---------- */
@@ -440,6 +700,8 @@ button {
   .banner-pitch { align-items: flex-start; }
 
   #category-tabs { margin: 32px 0 16px; }
+  .shop-toolbar { margin-bottom: 16px; }
+  .shop-toolbar > button { flex: 1; }
 
   #product-list {
     grid-template-columns: repeat(2, 1fr);

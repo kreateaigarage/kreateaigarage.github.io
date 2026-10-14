@@ -27,9 +27,9 @@
           <button type="button" class="is-active">KO</button>
           <button type="button">EN</button>
         </div>
-        <button type="button" class="cart-button" aria-label="장바구니">
+        <button type="button" class="cart-button" id="cart-open" aria-label="장바구니 열기">
           <svg viewBox="0 0 24 24" width="22" height="22"><path d="M3 4h2l2.4 11.2a1 1 0 0 0 1 .8h9.2a1 1 0 0 0 1-.8L20 8H6.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9.5" cy="20" r="1.4" fill="currentColor"/><circle cx="17" cy="20" r="1.4" fill="currentColor"/></svg>
-          <span class="cart-count">0</span>
+          <span class="cart-count" id="cart-count">0</span>
         </button>
       </div>
     </div>
@@ -51,20 +51,18 @@
     <!-- 3. 카테고리 탭 (js/app.js가 js/data.js의 상품 제목으로 채움) -->
     <nav id="category-tabs" aria-label="카테고리"></nav>
 
+    <!-- 전체 담기, 장바구니 보기 -->
+    <div class="shop-toolbar">
+      <button type="button" class="button-secondary" id="add-all">전체 담기</button>
+      <button type="button" class="button-cart-view" id="cart-open-main">
+        장바구니 보기 <span class="cart-view-count" id="cart-count-main">0</span>
+      </button>
+    </div>
+
     <!-- 4. 상품 목록 (js/app.js가 js/data.js의 상품 7개로 채움) -->
     <section id="product-list"></section>
 
-    <!-- 5. 장바구니 (4단계에서 동작을 만듦) -->
-    <section id="cart" class="panel">
-      <h2>장바구니</h2>
-      <p class="panel-empty">장바구니가 비어 있습니다.</p>
-    </section>
-
-    <!-- 6. 주문 완료 → 상세 페이지 (5단계에서 동작을 만듦) -->
-    <section id="order" class="panel">
-      <h2>주문 내역</h2>
-      <p class="panel-empty">아직 주문한 상품이 없습니다.</p>
-    </section>
+    <!-- 6. 주문 완료 → 상세 페이지 (5단계에서 만듦) -->
   </main>
 
   <!-- 7. 하단 판매자 정보 -->
@@ -76,6 +74,29 @@
       <p class="seller-note">© 2026 KREATE AI GARAGE</p>
     </div>
   </footer>
+
+  <!-- 5. 장바구니 창 (상단 장바구니 아이콘을 누르면 오른쪽에서 열림) -->
+  <div class="cart-overlay" id="cart-overlay"></div>
+  <aside class="cart-drawer" id="cart" aria-label="장바구니" inert>
+    <div class="cart-head">
+      <h2>장바구니 <span id="cart-head-count">(0)</span></h2>
+      <button type="button" class="cart-close" id="cart-close" aria-label="장바구니 닫기">✕</button>
+    </div>
+    <div class="cart-items" id="cart-items"></div>
+    <div class="cart-summary" id="cart-summary">
+      <p><span>상품</span><span id="cart-summary-count">0개</span></p>
+      <p><span>총 결제금액</span><strong>₩0</strong></p>
+      <p><span>배송</span><span>즉시 열람</span></p>
+      <!-- 누르면 동작하는 것은 5단계에서 만듦 -->
+      <button type="button" class="button-buy" id="cart-buy">구매하기</button>
+    </div>
+  </aside>
+
+  <!-- 담았을 때 잠깐 뜨는 알림 -->
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <span id="toast-text"></span>
+    <button type="button" id="toast-open-cart">장바구니 보기</button>
+  </div>
 
   <script src="js/data.js"></script>
   <script src="js/app.js"></script>
