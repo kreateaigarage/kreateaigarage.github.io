@@ -304,81 +304,45 @@ button {
   gap: 20px;
 }
 
+/* 카드마다 다른 색: js/data.js의 colors 두 가지가 --c1(주색), --c2(보조색)로 들어옴 */
 .product-card {
+  --c1: #9B7BFF;
+  --c2: #FF5FAE;
   display: flex;
   flex-direction: column;
+  min-height: 190px;
   border-radius: var(--radius);
-  background: var(--glass);
+  /* 오른쪽 위 보조색 빛 + 왼쪽 위에서 내려오는 주색 + 어두운 유리 바탕 */
+  background:
+    radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--c2) 45%, transparent), transparent 60%),
+    linear-gradient(160deg, color-mix(in srgb, var(--c1) 42%, transparent), transparent 75%),
+    rgba(20, 18, 34, 0.60);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border: 1px solid var(--glass-border);
+  border: 1px solid color-mix(in srgb, var(--c1) 45%, transparent);
   overflow: hidden;
   transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
 }
 
 .product-card:hover {
   transform: translateY(-4px);
-  border-color: rgba(255, 255, 255, 0.22);
-  box-shadow: 0 20px 50px -25px rgba(155, 123, 255, 0.6);
+  border-color: color-mix(in srgb, var(--c1) 80%, transparent);
+  box-shadow: 0 20px 50px -22px color-mix(in srgb, var(--c1) 75%, transparent);
 }
-
-.product-image {
-  position: relative;
-  aspect-ratio: 1 / 1;
-}
-
-/* 임시 그라데이션 그림 (7단계에서 아트워크로 교체) */
-.art-1 {
-  background:
-    radial-gradient(circle at 30% 25%, rgba(155, 123, 255, 0.95), transparent 60%),
-    linear-gradient(160deg, #1D1636, #FF5FAE);
-}
-
-.art-2 {
-  background:
-    radial-gradient(circle at 70% 30%, rgba(92, 200, 255, 0.85), transparent 60%),
-    linear-gradient(200deg, #14213D, #9B7BFF);
-}
-
-.badge {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  padding: 3px 9px;
-  border-radius: 6px;
-  font-size: 0.7rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  color: var(--bg);
-}
-
-.badge-best  { background: var(--grad); }
-.badge-kaist { background: var(--sky); }
-.badge-new   { background: var(--orange); }
 
 .product-body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 16px 16px 18px;
+  padding: 20px 18px 18px;
 }
 
 .product-title {
   margin: 0;
-  font-size: 1.02rem;
-  font-weight: 700;
-  line-height: 1.4;
-}
-
-.product-desc {
-  margin: 6px 0 12px;
-  font-size: 0.86rem;
-  color: var(--text-sub);
-  /* 두 줄이 넘으면 … 으로 자르기 */
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  font-size: 1.3rem;
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
 }
 
 .product-price {
@@ -398,16 +362,18 @@ button {
   width: 100%;
   padding: 10px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--c1) 70%, transparent);
+  background: rgba(11, 10, 20, 0.35);
   font-size: 0.9rem;
   font-weight: 700;
-  transition: background 0.2s, border-color 0.2s;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
 }
 
+/* 마우스를 올리면 그 카드의 두 색 그라데이션으로 채움 */
 .button-cart:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.35);
+  background: linear-gradient(120deg, var(--c1), var(--c2));
+  border-color: transparent;
+  color: var(--bg);
 }
 
 /* ---------- 5·6. 장바구니, 주문 내역 (기본 상자) ---------- */
@@ -480,10 +446,9 @@ button {
     gap: 12px;
   }
 
-  .product-body { padding: 12px 12px 14px; }
-  .product-title { font-size: 0.95rem; }
-  .product-desc { font-size: 0.8rem; }
-  .badge { top: 8px; left: 8px; }
+  .product-card { min-height: 150px; }
+  .product-body { padding: 14px 12px 14px; }
+  .product-title { font-size: 1.05rem; }
 }
 
 /* 움직임을 줄이도록 설정한 방문자에게는 효과를 끔 */
