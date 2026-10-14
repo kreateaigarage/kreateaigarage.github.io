@@ -512,7 +512,8 @@ body.is-cart-open { overflow: hidden; }
   border: 1px solid color-mix(in srgb, var(--c1) 35%, transparent);
 }
 
-.cart-item::before {
+.cart-item::before,
+.order-item::before {
   content: "";
   position: absolute;
   left: 0;
@@ -655,6 +656,125 @@ body.is-cart-open { overflow: hidden; }
   color: var(--bg);
   font-size: 0.82rem;
   font-weight: 800;
+}
+
+/* ---------- 6. 주문 완료 → 상세 화면 ---------- */
+#order {
+  max-width: 760px;
+  margin: 40px auto 0;
+}
+
+.order-head {
+  padding: 40px 24px 32px;
+  border-radius: 24px;
+  text-align: center;
+  background: var(--glass);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 30px 90px -40px rgba(255, 95, 174, 0.45);
+}
+
+.order-check {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background: var(--grad);
+  color: var(--bg);
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+
+.order-head h2 {
+  margin: 0 0 10px;
+  font-size: clamp(1.4rem, 3.5vw, 1.8rem);
+  font-weight: 800;
+}
+
+.order-head h2:focus { outline: none; }
+
+.order-number {
+  margin: 0 0 4px;
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  color: var(--text-sub);
+}
+
+.order-meta {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-sub);
+}
+
+.order-items {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+/* 상품별 상세 카드: 왼쪽 색 띠 = 그 상품의 색 */
+.order-item {
+  position: relative;
+  padding: 22px 24px 22px 30px;
+  border-radius: 18px;
+  background:
+    linear-gradient(120deg, color-mix(in srgb, var(--c1) 26%, transparent), transparent 70%),
+    rgba(20, 18, 34, 0.60);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid color-mix(in srgb, var(--c1) 40%, transparent);
+}
+
+.order-item-title {
+  margin: 0 0 12px;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.detail-block + .detail-block { margin-top: 14px; }
+
+.detail-heading {
+  margin: 0;
+  font-weight: 700;
+}
+
+.detail-note {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-sub);
+}
+
+.detail-list {
+  margin: 6px 0 0;
+  padding-left: 20px;
+}
+
+.detail-list li { margin: 3px 0; }
+
+.detail-list li::marker { color: var(--c1); }
+
+.order-foot {
+  margin-top: 32px;
+  padding: 28px 24px;
+  border-radius: var(--radius);
+  text-align: center;
+  background: var(--glass);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--glass-border);
+}
+
+.order-foot p { margin: 0 0 16px; }
+
+.order-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
 }
 
 /* ---------- 7. 판매자 정보 ---------- */
