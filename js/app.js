@@ -7,6 +7,7 @@ const LANG_KEY = "kreateaigarage-lang";
 let LANG = loadLang(); // 지금 화면 언어: "ko" 또는 "en"
 
 const shopEl = document.getElementById("shop");
+const bannerAddButton = document.getElementById("banner-add");
 const tabsEl = document.getElementById("category-tabs");
 const listEl = document.getElementById("product-list");
 const cartOpenButton = document.getElementById("cart-open");
@@ -200,6 +201,11 @@ function renderCart() {
   addAllButton.setAttribute("aria-pressed", allAdded);
   addAllButton.textContent = allAdded ? t("allAdded") : t("addAll");
 
+  // 배너의 [AI Works 담기] ↔ [AI Works 담김 ✓]
+  const bannerAdded = cart.includes("ai-works");
+  bannerAddButton.setAttribute("aria-pressed", bannerAdded);
+  bannerAddButton.textContent = bannerAdded ? t("bannerAdded") : t("bannerAdd");
+
   if (count === 0) {
     cartItemsEl.innerHTML = `
       <div class="cart-empty">
@@ -377,6 +383,9 @@ cartOverlayEl.addEventListener("click", closeCart);
 toastOpenCartButton.addEventListener("click", openCart);
 cartBuyButton.addEventListener("click", buy);
 continueShoppingButton.addEventListener("click", goShop);
+
+// 배너의 [AI Works 담기]: 카드의 담기 버튼과 같은 동작
+bannerAddButton.addEventListener("click", () => toggleCart("ai-works"));
 
 // [전체 담기] ↔ [모두 담김 ✓]
 addAllButton.addEventListener("click", () => {
